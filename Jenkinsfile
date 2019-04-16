@@ -21,17 +21,23 @@ pipeline {
                 }
             }
         }
-	    stage('Compile-Package'){
-	      // Get maven home path
-	      def mvnHome =  tool name: 'maven-3', type: 'maven'
-	      sh "${mvnHome}/bin/mvn package"
-	   }
-
-	   stage('SonarQube Analysis') {
-		def mvnHome =  tool name: 'maven-3', type: 'maven'
-		withSonarQubeEnv('SonarQube') {
-		  sh "${mvnHome}/bin/mvn sonar:sonar"
-		}
-	   }
     }
+}
+
+node{
+   stage('SCM Checkout'){
+     git 'https://github.com/Kinamori/simple-java-maven-app'
+   }
+   stage('Compile-Package'){
+      // Get maven home path
+      def mvnHome =  tool name: 'maven-3', type: 'maven'
+      sh "${mvnHome}/bin/mvn package"
+   }
+
+   stage('SonarQube Analysis') {
+        def mvnHome =  tool name: 'maven-3', type: 'maven'
+        withSonarQubeEnv('SonarQube') {
+          sh "${mvnHome}/bin/mvn sonar:sonar"
+        }
+   }
 }
